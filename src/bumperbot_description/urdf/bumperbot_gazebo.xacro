@@ -36,4 +36,14 @@
         <minDepth>0.001</minDepth>
         <maxVel>0.1</maxVel>
     </gazebo>
+
+    <gazebo>
+        <plugin filename="gz_ros2_control-system"
+                name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+                <parameters>$(find spiderbot_controllers)/config/spiderbot_controllers.yaml</parameters>
+            </plugin>
+            <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+                <render_engine>ogre2</render_engine>
+            </plugin>
+    </gazebo>
 </robot>

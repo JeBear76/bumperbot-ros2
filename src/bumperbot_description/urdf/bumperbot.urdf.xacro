@@ -15,6 +15,7 @@
 
     <xacro:include filename="$(find bumperbot_description)/urdf/colors.xacro" />
     <xacro:include filename="$(find bumperbot_description)/urdf/bumperbot_gazebo.xacro" />
+    <xacro:include filename="$(find bumperbot_description)/urdf/bumperbot_ros2_control.xacro" />
     <!-- <xacro:include filename="$(find bumperbot_description)/urdf/can.xacro" /> -->
 
     <link name="base_footprint" />
