@@ -35,6 +35,12 @@
         </collision>
     </link>
 
+    <joint name="base_joint" type="fixed">
+        <parent link="base_footprint" />
+        <child link="base_link" />
+        <origin xyz="0 0 0.033" rpy="0 0 0" />
+    </joint>
+
     <link name="wheel_right_link">
         <inertial>
             <origin xyz="0 -0.014 0" rpy="0 0 0" />
@@ -45,7 +51,7 @@
                 izz="1.8801969558182E-05" />
         </inertial>
         <visual>
-            <origin rpy="-${PI/2} 0 0" xyz="0 0 0" />
+            <origin rpy="${PI/2} 0 0" xyz="0 0 0" />
             <geometry>
                 <mesh filename="package://bumperbot_description/meshes/wheel_right_link.STL" />
             </geometry>
@@ -59,7 +65,15 @@
         </collision>
     </link>
 
-    <link name="wheel_left_link">
+    <joint name="wheel_right_joint" type="continuous">
+        <origin xyz="0 -0.0701101849418637 0" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="wheel_right_link" />
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <link
+        name="wheel_left_link">
         <inertial>
             <origin xyz="0 0.014 0" rpy="0 0 0" />
             <mass value="0.0530086043217644" />
@@ -69,7 +83,7 @@
                 izz="1.88266886146847E-05" />
         </inertial>
         <visual>
-            <origin rpy="${PI/2} 0 0" xyz="0 0 0" />
+            <origin rpy="-${PI/2} 0 0" xyz="0 0 0" />
             <geometry>
                 <mesh filename="package://bumperbot_description/meshes/wheel_left_link.STL" />
             </geometry>
@@ -82,6 +96,13 @@
             </geometry>
         </collision>
     </link>
+
+    <joint name="wheel_left_joint" type="continuous">
+        <origin xyz="0 0.0701101849418642 0" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="wheel_left_link" />
+        <axis xyz="0 1 0" />
+    </joint>
 
     <link name="caster_front_link">
         <inertial>
@@ -107,6 +128,13 @@
         </collision>
     </link>
 
+    <joint name="caster_front_joint" type="fixed">
+        <origin xyz="0.04755 0 -0.0275" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="caster_front_link" />
+        <axis xyz="0 0 0" />
+    </joint>
+
     <link name="caster_rear_link">
         <inertial>
             <origin xyz="3.8996812895542E-07 2.40073004698083E-07 0.00219173397061509" rpy="0 0 0" />
@@ -131,36 +159,11 @@
         </collision>
     </link>
 
-    <!-- JOINTS -->
-    <joint name="base_joint" type="fixed">
-        <parent link="base_footprint" />
-        <child link="base_link" />
-        <origin rpy="0 0 0" xyz="0 0 0.033" />
-    </joint>
-
-    <joint name="wheel_right_joint" type="continuous">
-        <parent link="base_link" />
-        <child link="wheel_right_link" />
-        <origin rpy="0 0 0" xyz="0 0.07 0.0" />
-        <axis xyz="0 1 0" />
-    </joint>
-
-    <joint name="wheel_left_joint" type="continuous">
-        <parent link="base_link" />
-        <child link="wheel_left_link" />
-        <origin rpy="0 0 0" xyz="0 -0.07 0.0" />
-        <axis xyz="0 1 0" />
-    </joint>
-
-    <joint name="caster_front_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="caster_front_link" />
-        <origin rpy="0 0 0" xyz="0.04755 0 -0.0275" />
-    </joint>
-
     <joint name="caster_rear_joint" type="fixed">
+        <origin xyz="-0.04755 0 -0.0275" rpy="0 0 0" />
         <parent link="base_link" />
         <child link="caster_rear_link" />
-        <origin rpy="0 0 0" xyz="-0.04755 0  -0.0275" />
+        <axis xyz="0 0 0" />
     </joint>
+
 </robot>
