@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'turtlesim_kinematics = bumperbot_py_examples.turtlesim_kinematics:main',
         ],
     },
 )

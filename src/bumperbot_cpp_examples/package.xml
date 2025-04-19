@@ -7,6 +7,8 @@
   <maintainer email="jerepondumie@gmail.com">jebear</maintainer>
   <license>TODO: License declaration</license>
 
+  <depend>rclcpp</depend>
+  <depend>turtlesim</depend>
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>
