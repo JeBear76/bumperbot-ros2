@@ -2,7 +2,7 @@
     <ros2_control type="system" name="RobotSystem">
         <xacro:if value="$(arg is_sim)">
             <hardware>
-                <plugin>gz_ros2_control::GazeboSimSystem</plugin>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
             </hardware>
         </xacro:if>
         <joint name="wheel_left_joint" type="revolute">

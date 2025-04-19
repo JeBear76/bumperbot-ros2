@@ -1,17 +1,9 @@
 <robot name="bumperbot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:arg name="is_sim" default="true" />
 
     <xacro:property name="PI" value="3.14159" />
     <xacro:property name="effort" value="30.0" />
     <xacro:property name="velocity" value="10.0" />
-
-    <xacro:macro name="default_inertial" params="mass">
-        <inertial>
-            <mass value="${mass}" />
-            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                iyy="1.0" iyz="0.0"
-                izz="1.0" />
-        </inertial>
-    </xacro:macro>
 
     <xacro:include filename="$(find bumperbot_description)/urdf/colors.xacro" />
     <xacro:include filename="$(find bumperbot_description)/urdf/bumperbot_gazebo.xacro" />
@@ -57,12 +49,12 @@
             <geometry>
                 <mesh filename="package://bumperbot_description/meshes/wheel_right_link.STL" />
             </geometry>
-            <material name="black" />
+            <material name="green" />
         </visual>
         <collision>
-            <origin rpy="-${PI/2} 0 0" xyz="0 0 0" />
+            <origin xyz="0 -0.015 0" rpy="1.57 0 0" />
             <geometry>
-                <mesh filename="package://bumperbot_description/meshes/wheel_right_link.STL" />
+                <sphere radius="0.033" />
             </geometry>
         </collision>
     </link>
@@ -81,12 +73,12 @@
             <geometry>
                 <mesh filename="package://bumperbot_description/meshes/wheel_left_link.STL" />
             </geometry>
-            <material name="black" />
+            <material name="red" />
         </visual>
         <collision>
-            <origin rpy="${PI/2} 0 0" xyz="0 0 0" />
+            <origin xyz="0 0.015 0" rpy="-1.57 0 0" />
             <geometry>
-                <mesh filename="package://bumperbot_description/meshes/wheel_left_link.STL" />
+                <sphere radius="0.033" />
             </geometry>
         </collision>
     </link>
@@ -108,9 +100,9 @@
             <material name="black" />
         </visual>
         <collision>
-            <origin rpy="-0 0 0" xyz="0 0 0" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://bumperbot_description/meshes/caster_front_link.STL" />
+                <sphere radius="0.005" />
             </geometry>
         </collision>
     </link>
@@ -132,9 +124,9 @@
             <material name="black" />
         </visual>
         <collision>
-            <origin rpy="-0 0 0" xyz="0 0 0" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="package://bumperbot_description/meshes/caster_rear_link.STL" />
+                <sphere radius="0.005" />
             </geometry>
         </collision>
     </link>
