@@ -1,3 +1,4 @@
+import math
 import rclpy
 from rclpy.node import Node
 from turtlesim.msg import Pose
@@ -30,7 +31,18 @@ class TurtleSimKinematics(Node):
         self.last_turtle2_pose_ = msg
         Tx = self.last_turtle2_pose_.x - self.last_turtle1_pose_.x
         Ty = self.last_turtle2_pose_.y - self.last_turtle1_pose_.y
-        self.get_logger().info(f'Turtle translation:\n\tTx: {Tx} \n\tTy: {Ty}\n')
+
+        Ttheta = self.last_turtle2_pose_.theta - self.last_turtle1_pose_.theta
+        Ttheta_deg = Ttheta * 180 / math.pi
+        self.get_logger().info(f'''
+                               Turtle translation:\n\t
+                               Tx: {Tx} \n\t
+                               Ty: {Ty}\n\t
+                               Ttheta: {Ttheta_deg} degrees\n
+                               Rotation Matrix:\n\t
+                               |cos(Ttheta) -sin(Ttheta)|:| {math.cos(Ttheta)}\t{-math.sin(Ttheta)}|\n\t
+                               |sin(Ttheta)  cos(Ttheta)|:| {-math.sin(Ttheta)}\t{math.cos(Ttheta)}|\n
+                               ''')
 
 def main(args=None):
     rclpy.init(args=args)

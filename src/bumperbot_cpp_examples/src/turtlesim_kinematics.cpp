@@ -31,9 +31,23 @@ public:
                 
                 auto translation_x = turtle2_last_pose_.x - turtle1_last_pose_.x;
                 auto translation_y = turtle2_last_pose_.y - turtle1_last_pose_.y;
-                
-                RCLCPP_INFO(this->get_logger(), "Turtle translation:\n\tTx: %f\n\tTy: %f\n",
-                        translation_x, translation_y);
+                auto theta = turtle2_last_pose_.theta - turtle1_last_pose_.theta;
+                auto theta_degrees = theta * 180.0 / M_PI;
+
+                RCLCPP_INFO(this->get_logger(), "Turtle translation:\n\t\
+                Tx: %f\n\t\
+                Ty: %f\n\
+                Theta: %f degrees\n\
+                Rotation Matrix:\n\t\
+                |cos(Ttheta) -sin(Ttheta)|:| %f\t%f|\n\t\
+                |sin(Ttheta)  cos(Ttheta)|:| %f\t%f|\n",
+                        translation_x, 
+                        translation_y, 
+                        theta_degrees,
+                        cos(theta),
+                        -sin(theta),
+                        sin(theta),
+                        cos(theta));
             });
     }
 };
