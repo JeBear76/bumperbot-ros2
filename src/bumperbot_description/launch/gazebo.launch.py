@@ -34,7 +34,7 @@ def generate_launch_description():
             ]
     )
 
-    physics_engine = "--physics-engine gz-physics-bullet-featherstone-plugin "
+    physics_engine = "" #"--physics-engine gz-physics-bullet-featherstone-plugin "
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
