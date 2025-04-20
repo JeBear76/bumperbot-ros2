@@ -9,6 +9,24 @@ from launch.conditions import UnlessCondition, IfCondition
 import os
 
 def generate_launch_description():
+    use_python_args = DeclareLaunchArgument(
+        name="use_python",
+        default_value='False',
+        description='Use python or not'
+        )
+    
+    wheel_radius_args = DeclareLaunchArgument(
+        name="wheel_radius",
+        default_value='0.033',
+        description='Wheel radius'
+        )
+    
+    wheel_separation_args = DeclareLaunchArgument(
+        name="wheel_separation",
+        default_value='0.17',
+        description='Wheel separation'
+        )
+    
     is_sim_args = DeclareLaunchArgument(
         name="is_sim",
         default_value='True',
@@ -21,6 +39,9 @@ def generate_launch_description():
         default_value="/dev/ttyACM0"
     )
     
+    use_python = LaunchConfiguration("use_python")
+    wheel_radius = LaunchConfiguration("wheel_radius")
+    wheel_separation = LaunchConfiguration("wheel_separation")
     is_sim = LaunchConfiguration("is_sim")
     port = LaunchConfiguration("port")
 
@@ -84,13 +105,43 @@ def generate_launch_description():
         ],
     )
 
+    simple_controller_cpp = Node(
+        package="bumperbot_controllers",
+        executable="simple_controller",
+        parameters=[
+            {
+                "wheel_radius": wheel_radius,
+                "wheel_separation": wheel_separation
+            }
+        ],
+        condition=UnlessCondition(use_python)
+    )
+
+    simple_controller_python = Node(
+        package="bumperbot_controllers",
+        executable="simple_controller.py",
+        parameters=[
+            {
+                "wheel_radius": wheel_radius,
+                "wheel_separation": wheel_separation
+            }
+        ],
+        condition=IfCondition(use_python)
+    )
+
     return LaunchDescription(
         [
+            use_python_args,
+            wheel_radius_args,
+            wheel_separation_args,
             is_sim_args,
             port_args,
             robot_state_publisher,
             controller_manager,
             joint_state_broadcaster_spawnwer,
             simple_velocity_controller_spawnwer,
+            simple_controller_cpp,
+            simple_controller_python,
+
         ]
     )
