@@ -16,7 +16,7 @@ def generate_launch_description():
 
     joy_teleop_node = Node(
         package='joy_teleop',
-        executable='teleop_node',
+        executable='joy_teleop',
         parameters=[
             os.path.join(get_package_share_directory("bumperbot_controllers"), "config", "teleop_config.yaml")
         ]
