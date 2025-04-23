@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'turtlesim_kinematics = bumperbot_py_examples.turtlesim_kinematics:main',
+            'simple_tf_kinematics = bumperbot_py_examples.simple_tf_kinematics:main',
         ],
     },
 )

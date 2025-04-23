@@ -8,6 +8,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+
+include_directories(include)
 
 add_executable(turtlesim_kinematics src/turtlesim_kinematics.cpp)
 ament_target_dependencies(
@@ -16,9 +20,23 @@ ament_target_dependencies(
   turtlesim
 )
 
+add_executable(simple_tf_kinematics src/simple_tf_kinematics.cpp)
+ament_target_dependencies(
+  simple_tf_kinematics
+  rclcpp
+  geometry_msgs
+  tf2_ros
+)
+
 install(TARGETS
   turtlesim_kinematics
+  simple_tf_kinematics
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY include
+  DESTINATION include
 )
 
 if(BUILD_TESTING)
