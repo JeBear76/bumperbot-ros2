@@ -6,7 +6,7 @@ import os
 def generate_launch_description():
     teleop_node = Node(
         package='keyboard_teleop',
-        executable='keyboard_teleop_hold',
+        executable='keyboard_teleop_incremental',
         name='keyboard_teleop',
         parameters=[
             os.path.join(get_package_share_directory("bumperbot_controllers"), "config", "keyboard_config.yaml")
