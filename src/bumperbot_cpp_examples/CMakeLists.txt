@@ -9,6 +9,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(bumperbot_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 include_directories(include)
@@ -26,6 +27,7 @@ ament_target_dependencies(
   rclcpp
   geometry_msgs
   tf2_ros
+  bumperbot_msgs
 )
 
 install(TARGETS

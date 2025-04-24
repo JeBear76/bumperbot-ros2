@@ -2,14 +2,20 @@ import rclpy
 from rclpy.node import Node
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.transform_broadcaster import TransformBroadcaster
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+from tf2_ros import TransformException
 
 from geometry_msgs.msg import TransformStamped
+from bumperbot_msgs.srv import GetTransform
 
 class SimpleTFKinematics(Node):
     def __init__(self):
         super().__init__("simple_tf_kinematics")
         self.x_increment_ = 0.01
         self.last_x_ = 0.0
+        self.tf_buffer_ = Buffer()
+        self.tf_listener_ = TransformListener(self.tf_buffer_, self)
 
         self.static_tf_broadcaster = StaticTransformBroadcaster(self)
         self.dynamic_tf_broadcaster = TransformBroadcaster(self)
@@ -18,8 +24,7 @@ class SimpleTFKinematics(Node):
         self.static_transform_stamped_1 = TransformStamped()
         self.dynamic_transform_stamped = TransformStamped()
 
-        static_stamp_= self.get_clock().now().to_msg()
-        self.static_transform_stamped.header.stamp = static_stamp_
+        self.static_transform_stamped.header.stamp = self.get_clock().now().to_msg()
         self.static_transform_stamped.header.frame_id = "bumperbot_base"
         self.static_transform_stamped.child_frame_id = "bumperbot_top"
         self.static_transform_stamped.transform.translation.x = 0.0
@@ -30,7 +35,7 @@ class SimpleTFKinematics(Node):
         self.static_transform_stamped.transform.rotation.z = 0.0
         self.static_transform_stamped.transform.rotation.w = 1.0
 
-        self.static_transform_stamped_1.header.stamp = static_stamp_
+        self.static_transform_stamped_1.header.stamp = self.get_clock().now().to_msg()
         self.static_transform_stamped_1.header.frame_id = "bumperbot_top"
         self.static_transform_stamped_1.child_frame_id = "bumperbot_adjacent"
         self.static_transform_stamped_1.transform.translation.x = 0.3
@@ -48,6 +53,8 @@ class SimpleTFKinematics(Node):
 
         self.timer_ = self.create_timer(0.1, self.timer_callback)
 
+        self.get_transform_service = self.create_service(GetTransform, 'get_transform', self.get_transform_callback)
+
     def timer_callback(self):
         self.dynamic_transform_stamped.header.stamp = self.get_clock().now().to_msg()        
         self.dynamic_transform_stamped.header.frame_id = "odom"
@@ -64,6 +71,19 @@ class SimpleTFKinematics(Node):
 
         self.last_x_ = self.dynamic_transform_stamped.transform.translation.x
 
+    def get_transform_callback(self, request, response):
+        self.get_logger().info(f"Transform request received from {request.frame_id} to {request.child_frame_id}")
+        requested_transform = TransformStamped()
+        try:
+            requested_transform = self.tf_buffer_.lookup_transform(request.frame_id, request.child_frame_id, rclpy.time.Time())
+        except TransformException as ex:
+            self.get_logger().error(f"Transform error between {request.frame_id} and {request.child_frame_id}: {ex}")
+            response.success = False
+            return response
+        response.transform = requested_transform
+        response.success = True
+        return response
+    
 def main():
     rclpy.init()
     node = SimpleTFKinematics()
