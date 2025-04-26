@@ -5,12 +5,13 @@ import math
 
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, TransformStamped
 from sensor_msgs.msg import JointState
 from nav_msgs.msg import Odometry
 from rclpy.time import Time
 from rclpy.constants import S_TO_NS
 from tf_transformations import quaternion_from_euler
+from tf2_ros import TransformBroadcaster
 
 class SimpleController(Node):
     def __init__(self):
@@ -78,6 +79,13 @@ class SimpleController(Node):
             {self.speed_conversion_}\n
             """
         )
+
+        self.transform_broadcaster_ = TransformBroadcaster(self)
+
+        self.transform_stamped_ = TransformStamped()
+        self.transform_stamped_.header.frame_id = "odom"
+        self.transform_stamped_.child_frame_id = "base_footprint"
+
         self.get_logger().info("Simple Controller Node has been started.")
 
     def velocityCallback(self, msg):
@@ -132,6 +140,16 @@ class SimpleController(Node):
         self.odom.twist.twist.angular.z = angular
 
         self.odom_pub_.publish(self.odom)
+
+        self.transform_stamped_.transform.translation.x = self.x_
+        self.transform_stamped_.transform.translation.y = self.y_
+        self.transform_stamped_.transform.rotation.x = q[0]
+        self.transform_stamped_.transform.rotation.y = q[2]
+        self.transform_stamped_.transform.rotation.z = q[2]
+        self.transform_stamped_.transform.rotation.w = q[3]
+        self.transform_stamped_.header.stamp = self.get_clock().now().to_msg()
+
+        self.transform_broadcaster_.sendTransform(self.transform_stamped_)
 
 def main(args=None):
     rclpy.init(args=args)

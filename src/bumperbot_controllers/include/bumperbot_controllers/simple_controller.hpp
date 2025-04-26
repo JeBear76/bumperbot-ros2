@@ -8,6 +8,9 @@
 
 #include <Eigen/Core>
 
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+
 class SimpleController : public rclcpp::Node
 {
 public:
@@ -31,5 +34,10 @@ private:
     double y_;
     double theta_;
     Eigen::Matrix2d speed_conversion_matrix_;
+
+    nav_msgs::msg::Odometry odom_msg_;
+    
+    std::unique_ptr<tf2_ros::TransformBroadcaster> transform_broadcaster_;
+    geometry_msgs::msg::TransformStamped transform_stamped_;
 };
 #endif // SIMPLE_CONTROLLER_HPP
