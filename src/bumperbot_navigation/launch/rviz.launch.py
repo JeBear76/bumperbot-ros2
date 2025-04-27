@@ -21,7 +21,7 @@ def generate_launch_description():
             ]
         )
 
-    noisy_path_pub = Node(
+    kalman_filter = Node(
             package="bumperbot_navigation",
             executable="kalman_filter",
             parameters=[
@@ -40,5 +40,6 @@ def generate_launch_description():
     return LaunchDescription([
         path_pub,
         noisy_path_pub,
+        kalman_filter,
         rviz2
     ])
