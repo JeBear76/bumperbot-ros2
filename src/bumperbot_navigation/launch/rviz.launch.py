@@ -12,6 +12,15 @@ def generate_launch_description():
             executable="path_publisher"
         )
 
+    noisy_path_pub = Node(
+            package="bumperbot_navigation",
+            executable="path_publisher",
+            parameters=[
+                {"odom_topic":"/bumperbot_controller/noisy_odom",
+                "path_topic":"/bumperbot_controller/noisy_trajectory"}
+            ]
+        )
+    
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -22,5 +31,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         path_pub,
+        noisy_path_pub,
         rviz2
     ])

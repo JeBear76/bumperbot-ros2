@@ -20,3 +20,6 @@ sudo apt-get install -y ros-jazzy-tf-transformations
 ```
 sudo apt-get install xboxdrv
 ```
+```
+sudo apt install ros-jazzy-plotjuggler*
+```

@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -9,6 +9,38 @@ from launch.conditions import UnlessCondition, IfCondition
 from launch.actions import GroupAction
 import os
 
+def noisy_controller(context, *args, **kwargs):
+    use_python = LaunchConfiguration("use_python").perform(context)
+    wheel_radius = float(LaunchConfiguration("wheel_radius").perform(context))
+    wheel_separation = float(LaunchConfiguration("wheel_separation").perform(context))
+    wheel_radius_error = float(LaunchConfiguration("wheel_radius_error").perform(context))
+    wheel_separation_error = float(LaunchConfiguration("wheel_separation_error").perform(context))
+    
+
+    noisy_controller_py = Node(
+        package="bumperbot_controllers",
+        executable="noisy_controller.py",
+        parameters=[
+            {"wheel_radius": wheel_radius + wheel_radius_error ,
+            "wheel_separation": wheel_separation - wheel_separation_error}
+        ],
+        condition = IfCondition(use_python)
+    )
+
+    noisy_controller_cpp = Node(
+        package="bumperbot_controllers",
+        executable="noisy_controller",
+        parameters=[
+            {"wheel_radius": wheel_radius + wheel_radius_error,
+            "wheel_separation": wheel_separation - wheel_separation_error}
+        ],
+        condition = UnlessCondition(use_python)
+    )
+
+    return [
+        noisy_controller_py,
+        noisy_controller_cpp
+    ]
 
 def generate_launch_description():
     use_simple_controller_args = DeclareLaunchArgument(
@@ -33,6 +65,18 @@ def generate_launch_description():
         name="wheel_separation", 
         default_value="0.17", 
         description="Wheel separation"
+    )
+
+    wheel_radius_error_args = DeclareLaunchArgument(
+        name="wheel_radius_error", 
+        default_value="0.001", 
+        description="Wheel radius Error"
+    )
+
+    wheel_separation_error_args = DeclareLaunchArgument(
+        name="wheel_separation_error", 
+        default_value="0.002", 
+        description="Wheel separation Error"
     )
 
     is_sim_args = DeclareLaunchArgument(
@@ -145,11 +189,17 @@ def generate_launch_description():
         ],
     )
 
+    noisy_controller_launch = OpaqueFunction(
+        function=noisy_controller
+    )
+
     return LaunchDescription(
         [
             use_python_args,
             wheel_radius_args,
             wheel_separation_args,
+            wheel_radius_error_args,
+            wheel_separation_error_args,
             is_sim_args,
             port_args,
             use_simple_controller_args,
@@ -158,5 +208,6 @@ def generate_launch_description():
             joint_state_broadcaster_spawnwer,
             bumperbot_diffdrive_controller_spawnwer,
             simple_controller,
+            noisy_controller_launch
         ]
     )

@@ -1,10 +1,10 @@
-#include <bumperbot_controllers/simple_controller.hpp>
-#include <Eigen/Geometry>
+#include <bumperbot_controllers/noisy_controller.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
+#include <random>
 
 using std::placeholders::_1;
 
-SimpleController::SimpleController(const std::string &name) : Node(name), 
+NoisyController::NoisyController(const std::string &name) : Node(name), 
     left_wheel_previous_pos_(0.0), right_wheel_previous_pos_(0.0),
     x_(0.0), y_(0.0), theta_(0.0)
 {
@@ -17,66 +17,46 @@ SimpleController::SimpleController(const std::string &name) : Node(name),
     RCLCPP_INFO(this->get_logger(), "Wheel radius: %f", wheel_radius_);
     RCLCPP_INFO(this->get_logger(), "Wheel separation: %f", wheel_separation_);
 
-    wheel_cmd_pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>("/simple_velocity_controller/commands", 10);
-
-    velocity_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped>(
-        "/bumperbot_controller/cmd_vel", 10, std::bind(&SimpleController::velocityCallback, this, std::placeholders::_1));
-
     joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
-        "/joint_states", 10, std::bind(&SimpleController::jointStateCallback, this, std::placeholders::_1));
+        "/joint_states", 10, std::bind(&NoisyController::jointStateCallback, this, std::placeholders::_1));
     
     odometry_pub_ = this->create_publisher<nav_msgs::msg::Odometry>(
-        "/bumperbot_controller/odom", 10
+        "/bumperbot_controller/noisy_odom", 10
     );
 
     previous_time_ = this->now();
 
     odom_msg_.header.frame_id = "odom";
-    odom_msg_.child_frame_id = "bumperbot_footprint";
+    odom_msg_.child_frame_id = "bumperbot_footprint_ekf";
     odom_msg_.pose.pose.orientation.x = 0.0;
     odom_msg_.pose.pose.orientation.y = 0.0;
     odom_msg_.pose.pose.orientation.z = 0.0;
     odom_msg_.pose.pose.orientation.w = 1.0;
 
-    // Initialize the speed conversion matrix
-    speed_conversion_matrix_ << wheel_radius_ / 2.0,
-        wheel_radius_ / 2.0,
-        wheel_radius_ / wheel_separation_,
-        -wheel_radius_ / wheel_separation_;
-
     transform_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     transform_stamped_.header.frame_id = "odom";
-    transform_stamped_.child_frame_id = "base_footprint";
-
-    RCLCPP_INFO_STREAM(this->get_logger(), "Conversion Matrix: \n" << speed_conversion_matrix_);
+    transform_stamped_.child_frame_id = "base_footprint_noisy";
 }
 
-void SimpleController::velocityCallback(const geometry_msgs::msg::TwistStamped &msg)
+void NoisyController::jointStateCallback(const sensor_msgs::msg::JointState &msg)
 {
-    // Convert the velocity command to wheel speeds
-    Eigen::Vector2d robot_speed ( msg.twist.linear.x, msg.twist.angular.z);
-    Eigen::Vector2d wheel_speed = speed_conversion_matrix_.inverse() * robot_speed;        
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine noise_generator(seed);
+    std::normal_distribution<double> left_encoder_noise(0.0, 0.005);
+    std::normal_distribution<double> right_encoder_noise(0.0, 0.005);
+    
+    double wheel_encoder_left = msg.position.at(1) + left_encoder_noise(noise_generator);
+    double wheel_encoder_right = msg.position.at(0) + right_encoder_noise(noise_generator);
 
-    // Create a message to publish the wheel speeds
-    std_msgs::msg::Float64MultiArray wheel_cmd_msg;
-    wheel_cmd_msg.data.push_back(wheel_speed.coeff(1)); // Left wheel speed
-    wheel_cmd_msg.data.push_back(wheel_speed.coeff(0)); // Right wheel speed
-
-    // Publish the wheel speeds
-    wheel_cmd_pub_->publish(wheel_cmd_msg);
-}
-
-void SimpleController::jointStateCallback(const sensor_msgs::msg::JointState &msg)
-{
-    double dp_left = msg.position.at(1) - left_wheel_previous_pos_;
-    double dp_right = msg.position.at(0) - right_wheel_previous_pos_;
+    double dp_left = wheel_encoder_left - left_wheel_previous_pos_;
+    double dp_right = wheel_encoder_right - right_wheel_previous_pos_;
 
     rclcpp::Time msg_time = msg.header.stamp;
     rclcpp::Duration dt = msg_time - previous_time_;
 
     previous_time_ = msg_time;
-    left_wheel_previous_pos_ = msg.position.at(1);
-    right_wheel_previous_pos_ = msg.position.at(0);
+    left_wheel_previous_pos_ = wheel_encoder_left;
+    right_wheel_previous_pos_ = wheel_encoder_right;
 
     double fi_left = dp_left / dt.seconds();
     double fi_right = dp_right / dt.seconds();
@@ -90,14 +70,6 @@ void SimpleController::jointStateCallback(const sensor_msgs::msg::JointState &ms
     theta_ += d_theta;
     x_ += d_s * cos(theta_);
     y_ += d_s * sin(theta_);
-
-    // RCLCPP_INFO_STREAM(rclcpp::get_logger("SimpleController"), 
-    // "\nLinear: " << linear 
-    // << "\nAngular: " << angular
-    // << "\nX: " << x_
-    // << "\nY: " << y_
-    // << "\ntheta: " << theta_);
-
 
     odom_msg_.header.stamp = get_clock()->now();
     tf2::Quaternion q;
@@ -127,7 +99,7 @@ void SimpleController::jointStateCallback(const sensor_msgs::msg::JointState &ms
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<SimpleController>("simple_controller");
+    auto node = std::make_shared<NoisyController>("noisy_controller");
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

@@ -31,8 +31,18 @@ def generate_launch_description():
             launch_arguments={"is_sim": "True"}.items()
         )
     
+    nav_path = IncludeLaunchDescription(
+            os.path.join(
+                get_package_share_directory("bumperbot_navigation"),
+                "launch",
+                "rviz.launch.py"
+            ),
+            launch_arguments={"is_sim": "True"}.items()
+        )
+    
     return LaunchDescription([
         gazebo,
         controller,
-        teleop
+        teleop,
+        nav_path
     ])
