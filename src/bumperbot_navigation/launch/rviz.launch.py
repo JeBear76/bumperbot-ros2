@@ -20,7 +20,15 @@ def generate_launch_description():
                 "path_topic":"/bumperbot_controller/noisy_trajectory"}
             ]
         )
-    
+
+    noisy_path_pub = Node(
+            package="bumperbot_navigation",
+            executable="kalman_filter",
+            parameters=[
+                {"odom_topic":"/bumperbot_controller/noisy_odom"}
+            ]
+        )
+
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',

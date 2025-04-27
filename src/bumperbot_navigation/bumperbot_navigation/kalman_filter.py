@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rclpy
-from rclpy import Node
+from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
 
@@ -22,6 +22,9 @@ class KalmanFilter(Node):
 
         self.kalman_odom_ = Odometry()
 
+        self.motion_variance_ = 4.0
+        self.measurement_variance_ = 0.5
+
     def odomCallback(self,msg):
         self.kalman_odom_ = msg
         if self.is_first_odom_:
@@ -29,14 +32,38 @@ class KalmanFilter(Node):
             self.last_angular_z_ = msg.twist.twist.angular.z
             self.is_first_odom_ = False
             return
+        
+        self.motion_ = msg.twist.twist.z - self.last_angular_z_
+
         self.statePrediction()
         self.measurementUpdate()
 
+        self.kalman_odom_.twist.twist.angular.z = self.mean_
+
+        self.odom_pub_.publish(self.kalman_odom_)
+
+        self.last_angular_z_ = msg.twist.twist.z
+
+
     def imuCallback(self,msg):
         self.imu_angular_z_ = msg.angular_velocity.z
-
-    def statePrediction(self):
-        pass
         
     def measurementUpdate(self):
-        pass
+        self.mean_ = (self.measurement_variance_ * self.mean_ + self.variance_ * self.imu_angular_z_)\
+                     / (self.variance_ + self.measurement_variance_)
+        self.variance_ = (self.variance_ * self.measurement_variance_)\
+                     / (self.variance_ + self.measurement_variance_)
+
+    def statePrediction(self):
+        self.mean_ = self.mean_ + self.motion_
+        self.variance_ = self.variance_ + self.motion_variance_
+
+def main(args=None):
+    rclpy.init(args=args)
+    kalman_filter = KalmanFilter()
+    rclpy.spin(kalman_filter)
+    kalman_filter.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
