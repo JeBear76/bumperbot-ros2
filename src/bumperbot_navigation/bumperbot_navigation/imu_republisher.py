@@ -9,7 +9,7 @@ class ImuRepublisher(Node):
         super().__init__("imu_republisher")
         time.sleep(1)
         self.imu_sub_ = self.create_subscription(Imu, "/imu/out", self.imuCallback, 10)
-        self.imu_pub_ = self.create_publisher(Imu, "/imu/ekf", 10)
+        self.imu_pub_ = self.create_publisher(Imu, "/imu_ekf", 10)
 
     def imuCallback(self, msg):
         msg.header.frame_id = "base_footprint_ekf"

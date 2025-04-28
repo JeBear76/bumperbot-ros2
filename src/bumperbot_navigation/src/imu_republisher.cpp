@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     auto node = rclcpp::Node::make_shared("imu_republisher");
     rclcpp::sleep_for(1s);
-    imu_pub_ = node->create_publisher<sensor_msgs::msg::Imu>("/imu/ekf", 10);
+    imu_pub_ = node->create_publisher<sensor_msgs::msg::Imu>("/imu_ekf", 10);
     auto imu_sub_ = node->create_subscription<sensor_msgs::msg::Imu>("/imu/out", 10, imuCallback);
     rclcpp::spin(node);
     rclcpp::shutdown();

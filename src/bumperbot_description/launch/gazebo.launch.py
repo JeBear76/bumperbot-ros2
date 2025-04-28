@@ -46,7 +46,7 @@ def generate_launch_description():
             ]          
         ),
         launch_arguments={
-            "gz_args": [" -v4 -r empty.sdf ", physics_engine], 'on_exit_shutdown': 'true'
+            "gz_args": [" -v 4 -r empty.sdf ", physics_engine], 'on_exit_shutdown': 'true'
         }.items()
     )
 

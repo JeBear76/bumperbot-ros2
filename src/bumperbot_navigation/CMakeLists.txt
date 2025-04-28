@@ -22,7 +22,7 @@ install(PROGRAMS
 )
 
 install(
-  DIRECTORY launch rviz
+  DIRECTORY config launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
