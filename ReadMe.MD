@@ -23,3 +23,18 @@ sudo apt-get install xboxdrv
 ```
 sudo apt install ros-jazzy-plotjuggler*
 ```
+## Arduino development
+```
+sudo add-apt-repository universe
+```
+install linux arduino ide
+```
+sudo apt install -y libfuse2
+```
+## PI Config
+```
+sudo usermod -a -G dialout $USER
+sudo apt install xboxdrv
+
+tar -xvzf <path>.tar.gz -C <dir>
+```
