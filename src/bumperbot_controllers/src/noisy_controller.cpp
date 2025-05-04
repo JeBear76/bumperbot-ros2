@@ -21,13 +21,13 @@ NoisyController::NoisyController(const std::string &name) : Node(name),
         "/joint_states", 10, std::bind(&NoisyController::jointStateCallback, this, std::placeholders::_1));
     
     odometry_pub_ = this->create_publisher<nav_msgs::msg::Odometry>(
-        "/bumperbot_controller/noisy_odom", 10
+        "/bumperbot_controller/odom_noisy", 10
     );
 
     previous_time_ = this->now();
 
     odom_msg_.header.frame_id = "odom";
-    odom_msg_.child_frame_id = "bumperbot_footprint_ekf";
+    odom_msg_.child_frame_id = "base_footprint_ekf";
     odom_msg_.pose.pose.orientation.x = 0.0;
     odom_msg_.pose.pose.orientation.y = 0.0;
     odom_msg_.pose.pose.orientation.z = 0.0;
@@ -61,8 +61,8 @@ void NoisyController::jointStateCallback(const sensor_msgs::msg::JointState &msg
     double fi_left = dp_left / dt.seconds();
     double fi_right = dp_right / dt.seconds();
     
-    auto linear = (wheel_radius_ * (fi_left + fi_right)) / 2.0;
-    auto angular = (wheel_radius_ * (fi_right - fi_left)) / wheel_separation_;
+    double linear = (wheel_radius_ * (fi_left + fi_right)) / 2.0;
+    double angular = (wheel_radius_ * (fi_right - fi_left)) / wheel_separation_;
 
     double d_s = (wheel_radius_ * (dp_left + dp_right)) / 2.0;
     double d_theta = (wheel_radius_ * (dp_right - dp_left)) / wheel_separation_;
@@ -74,10 +74,10 @@ void NoisyController::jointStateCallback(const sensor_msgs::msg::JointState &msg
     odom_msg_.header.stamp = get_clock()->now();
     tf2::Quaternion q;
     q.setRPY(0,0,theta_);
-    odom_msg_.pose.pose.orientation.x = q.x();
-    odom_msg_.pose.pose.orientation.y = q.y();
-    odom_msg_.pose.pose.orientation.z = q.z();
-    odom_msg_.pose.pose.orientation.w = q.w();
+    odom_msg_.pose.pose.orientation.x = q.getX();
+    odom_msg_.pose.pose.orientation.y = q.getY();
+    odom_msg_.pose.pose.orientation.z = q.getZ();
+    odom_msg_.pose.pose.orientation.w = q.getW();
     odom_msg_.pose.pose.position.x = x_;
     odom_msg_.pose.pose.position.y = y_;
     odom_msg_.twist.twist.linear.x = linear;

@@ -40,8 +40,19 @@ def generate_launch_description():
         executable="imu_republisher"
     )
 
+
+    ekf_path_pub = Node(
+            package="bumperbot_navigation",
+            executable="path_publisher",
+            parameters=[
+                {"odom_topic":"/odometry/filtered",
+                "path_topic":"/bumperbot_controller/ekf_trajectory"}
+            ]
+        )
+
     return LaunchDescription([
         static_transform_publisher,
         imu_republisher,
-        robot_localization
+        robot_localization,
+        ekf_path_pub
     ])

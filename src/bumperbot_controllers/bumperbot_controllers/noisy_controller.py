@@ -52,7 +52,7 @@ class NoisyController(Node):
         )
 
         self.odom_pub_ = self.create_publisher(
-            Odometry, "bumperbot_controller/noisy_odom", 10
+            Odometry, "bumperbot_controller/odom_noisy", 10
         )
 
         self.transform_broadcaster_ = TransformBroadcaster(self)

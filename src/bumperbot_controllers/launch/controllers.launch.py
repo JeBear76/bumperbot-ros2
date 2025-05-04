@@ -45,7 +45,7 @@ def noisy_controller(context, *args, **kwargs):
 def generate_launch_description():
     use_simple_controller_args = DeclareLaunchArgument(
         name="use_simple_controller",
-        default_value="True",
+        default_value="False",
         description="Use my custom simple controller or not",
     )
 

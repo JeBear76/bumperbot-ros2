@@ -18,7 +18,7 @@ def generate_launch_description():
             package="bumperbot_navigation",
             executable="path_publisher",
             parameters=[
-                {"odom_topic":"/bumperbot_controller/noisy_odom",
+                {"odom_topic":"/bumperbot_controller/odom_noisy",
                 "path_topic":"/bumperbot_controller/noisy_trajectory"}
             ]
         )
@@ -27,7 +27,7 @@ def generate_launch_description():
             package="bumperbot_navigation",
             executable="kalman_filter",
             parameters=[
-                {"odom_topic":"/bumperbot_controller/noisy_odom"}
+                {"odom_topic":"/bumperbot_controller/odom_noisy"}
             ]
         )
 

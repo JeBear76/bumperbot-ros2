@@ -18,7 +18,8 @@ sudo apt-get install -y ros-jazzy-joy-teleop
 sudo apt-get install -y ros-jazzy-tf-transformations
 ```
 ```
-sudo apt-get install xboxdrv
+sudo apt-get install -y xboxdrv
+sudo apt install -y python3-pynput
 ```
 ```
 sudo apt install ros-jazzy-plotjuggler*

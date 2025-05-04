@@ -12,7 +12,7 @@ KalmanFilter::KalmanFilter(const std::string &name) : Node(name),
                                                       motion_variance_(4.0),
                                                       measurement_variance_(0.5)
 {
-    declare_parameter("odom_topic", "/bumperbot_controller/noisy_odom");
+    declare_parameter("odom_topic", "/bumperbot_controller/odom_noisy");
 
     auto odom_topic = get_parameter("odom_topic").as_string();
 

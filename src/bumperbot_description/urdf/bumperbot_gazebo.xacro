@@ -51,8 +51,7 @@
     <gazebo reference="imu_link">
         <sensor name="imu" type="imu">
             <always_on>true</always_on>
-            <update_rate>100</update_rate>
-            <gz_frame_id>imu_link</gz_frame_id>
+            <update_rate>50</update_rate>
             <topic>imu</topic>
             <imu>
                 <angular_velocity>
@@ -78,19 +77,19 @@
                 <linear_acceleration>
                     <x>
                         <noise type="gaussian">
-                            <mean>0</mean>
+                            <mean>0.0</mean>
                             <stddev>1.7e-2</stddev>
                         </noise>
                     </x>
                     <y>
                         <noise type="gaussian">
-                            <mean>0</mean>
+                            <mean>0.0</mean>
                             <stddev>1.7e-2</stddev>
                         </noise>
                     </y>
                     <z>
                         <noise type="gaussian">
-                            <mean>0</mean>
+                            <mean>0.0</mean>
                             <stddev>1.7e-2</stddev>
                         </noise>
                     </z>
