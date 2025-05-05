@@ -1,16 +1,25 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
-from launch.actions import SetEnvironmentVariable, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command
+from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
 import os
+from os import pathsep
 from pathlib import Path
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     bumperbot_description_dir = get_package_share_directory('bumperbot_description')
     model = os.path.join(bumperbot_description_dir,'urdf','bumperbot.urdf.xacro')
+    
+    world_name_arg = DeclareLaunchArgument(name="world_name", default_value="empty")
+
+    world_path = PathJoinSubstitution([
+        bumperbot_description_dir,
+        "worlds",
+        PythonExpression(expression=["'",LaunchConfiguration("world_name"),"'"," + '.world'"])
+         ])
     
     robot_description = ParameterValue(Command([
         "xacro ", 
@@ -27,14 +36,12 @@ def generate_launch_description():
             ]
     )
 
+    model_path = str(Path(bumperbot_description_dir).parent.resolve())
+    model_path += pathsep + os.path.join(bumperbot_description_dir, "models")
+    
     gazebo_resource_path = SetEnvironmentVariable(
-        name="GZ_SIM_RESOURCE_PATH",
-        value=[
-            str(Path(bumperbot_description_dir).parent.resolve())
-            ]
+        "GZ_SIM_RESOURCE_PATH", model_path
     )
-
-    physics_engine = "" #"--physics-engine gz-physics-bullet-featherstone-plugin "
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -46,7 +53,8 @@ def generate_launch_description():
             ]          
         ),
         launch_arguments={
-            "gz_args": [" -v 4 -r empty.sdf ", physics_engine], 'on_exit_shutdown': 'true'
+            "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"]), 
+            'on_exit_shutdown': 'true'
         }.items()
     )
 
@@ -72,6 +80,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        world_name_arg,
         gazebo_resource_path,
         robot_state_publisher,
         gazebo,
