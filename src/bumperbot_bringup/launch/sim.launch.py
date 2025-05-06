@@ -1,16 +1,25 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    launch_ekf_arg = DeclareLaunchArgument(name="launch_ekf", default_value="False")
+
+    launch_ekf = LaunchConfiguration("launch_ekf")
+
+    world_name_arg = DeclareLaunchArgument(name="world_name", default_value="small_house")
+
     gazebo = IncludeLaunchDescription(
             os.path.join(
                 get_package_share_directory("bumperbot_description"),
                 "launch",
                 "gazebo.launch.py"
-            )            
+            ),
+            launch_arguments={"world_name": LaunchConfiguration("world_name")}.items()
         )
     
     controller = IncludeLaunchDescription(
@@ -37,12 +46,26 @@ def generate_launch_description():
                 "launch",
                 "rviz.launch.py"
             ),
-            launch_arguments={"is_sim": "True"}.items()
+            launch_arguments={"is_sim": "True", "launch_ekf": launch_ekf}.items()
+        )
+    
+    ekf = IncludeLaunchDescription(
+            os.path.join(
+                get_package_share_directory("bumperbot_navigation"),
+                "launch",
+                "ekf.launch.py"
+            ),
+            launch_arguments={"is_sim": "True"}.items(),
+            condition=IfCondition(launch_ekf)
+
         )
     
     return LaunchDescription([
+        launch_ekf_arg,
+        world_name_arg,
         gazebo,
         controller,
         teleop,
-        nav_path
+        nav_path,
+        ekf
     ])

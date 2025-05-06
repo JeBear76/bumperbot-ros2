@@ -9,6 +9,10 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     bumperbot_navigation_dir = get_package_share_directory('bumperbot_navigation')
 
+    launch_ekf_arg=DeclareLaunchArgument("launch_ekf", default_value="False")
+
+    launch_ekf=LaunchConfiguration("launch_ekf")
+
     path_pub = Node(
             package="bumperbot_navigation",
             executable="path_publisher"
@@ -31,15 +35,20 @@ def generate_launch_description():
             ]
         )
 
+    rviz_file = "rviz.rviz"
+    if launch_ekf:
+        rviz_file = "rviz-ekf.rviz"
+
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
         output='screen',
-        arguments=["-d", os.path.join(bumperbot_navigation_dir, "rviz", "rviz.rviz")]
+        arguments=["-d", os.path.join(bumperbot_navigation_dir, "rviz", rviz_file)]
     )
 
     return LaunchDescription([
+        launch_ekf_arg,
         path_pub,
         noisy_path_pub,
         kalman_filter,
