@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(bumperbot_navigation)
+project(bumperbot_localization)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -18,6 +18,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   ${PROJECT_NAME}/kalman_filter.py
   ${PROJECT_NAME}/imu_republisher.py
+  ${PROJECT_NAME}/odometry_motion_model.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

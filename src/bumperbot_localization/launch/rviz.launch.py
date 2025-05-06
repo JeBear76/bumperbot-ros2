@@ -7,19 +7,19 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    bumperbot_navigation_dir = get_package_share_directory('bumperbot_navigation')
+    bumperbot_localization_dir = get_package_share_directory('bumperbot_localization')
 
     launch_ekf_arg=DeclareLaunchArgument("launch_ekf", default_value="False")
 
     launch_ekf=LaunchConfiguration("launch_ekf")
 
     path_pub = Node(
-            package="bumperbot_navigation",
+            package="bumperbot_localization",
             executable="path_publisher"
         )
 
     noisy_path_pub = Node(
-            package="bumperbot_navigation",
+            package="bumperbot_localization",
             executable="path_publisher",
             parameters=[
                 {"odom_topic":"/bumperbot_controller/odom_noisy",
@@ -28,7 +28,7 @@ def generate_launch_description():
         )
 
     kalman_filter = Node(
-            package="bumperbot_navigation",
+            package="bumperbot_localization",
             executable="kalman_filter",
             parameters=[
                 {"odom_topic":"/bumperbot_controller/odom_noisy"}
@@ -44,7 +44,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         output='screen',
-        arguments=["-d", os.path.join(bumperbot_navigation_dir, "rviz", rviz_file)]
+        arguments=["-d", os.path.join(bumperbot_localization_dir, "rviz", rviz_file)]
     )
 
     return LaunchDescription([

@@ -1,4 +1,4 @@
-#include <bumperbot_navigation/path_publisher.hpp>
+#include <bumperbot_localization/path_publisher.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 
 using std::placeholders::_1;

@@ -7,7 +7,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    bumperbot_navigation_dir = get_package_share_directory('bumperbot_navigation')
+    bumperbot_localization_dir = get_package_share_directory('bumperbot_localization')
 
     static_transform_publisher = Node(
         package="tf2_ros",
@@ -32,17 +32,17 @@ def generate_launch_description():
         executable="ekf_node",
         name="ekf_filter_node",
         output="screen",
-        parameters=[os.path.join(bumperbot_navigation_dir, "config", "ekf.yaml")]
+        parameters=[os.path.join(bumperbot_localization_dir, "config", "ekf.yaml")]
     )
 
     imu_republisher = Node(
-        package="bumperbot_navigation",
+        package="bumperbot_localization",
         executable="imu_republisher"
     )
 
 
     ekf_path_pub = Node(
-            package="bumperbot_navigation",
+            package="bumperbot_localization",
             executable="path_publisher",
             parameters=[
                 {"odom_topic":"/odometry/filtered",
