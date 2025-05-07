@@ -67,14 +67,14 @@ class OdometryMotionModel(Node):
 
         _, _, yaw = euler_from_quaternion(q)
 
-        if self.is_first_odom_:
+        if self.is_first_odom:
             self.last_odom_x = msg.pose.pose.position.x
             self.last_odom_y = msg.pose.pose.position.y
             self.last_odom_theta = yaw
 
             self.samples.header.frame_id = msg.header.frame_id
 
-            self.is_first_odom_ = False
+            self.is_first_odom = False
             return
 
         odom_x_increment = msg.pose.pose.position.x - self.last_odom_x
