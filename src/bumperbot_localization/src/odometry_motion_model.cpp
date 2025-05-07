@@ -133,17 +133,17 @@ void OdometryMotionModel::odomCallback(const nav_msgs::msg::Odometry &msg)
 
         sample.position.x += delta_transl_draw * std::cos(sample_yaw + delta_rot1_draw);
         sample.position.y += delta_transl_draw * std::sin(sample_yaw + delta_rot1_draw);
-        tf2::Quaternion sample_q_new;
-        sample_q_new.setRPY(0.0, 0.0, sample_yaw + delta_rot1_draw + delta_rot2_draw);
-        sample.orientation.x = sample_q_new.getX();
-        sample.orientation.y = sample_q_new.getY();
-        sample.orientation.z = sample_q_new.getZ();
-        sample.orientation.w = sample_q_new.getW();
+        tf2::Quaternion q1;
+        q1.setRPY(0.0, 0.0, sample_yaw + delta_rot1_draw + delta_rot2_draw);
+        sample.orientation.x = q1.getX();
+        sample.orientation.y = q1.getY();
+        sample.orientation.z = q1.getZ();
+        sample.orientation.w = q1.getW();
     }
 
     last_odom_x = msg.pose.pose.position.x;
     last_odom_y = msg.pose.pose.position.y;
-    last_odom_y = yaw;
+    last_odom_theta = yaw;
 
     pose_pub_->publish(samples);
 }
