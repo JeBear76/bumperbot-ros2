@@ -117,7 +117,7 @@ class OdometryMotionModel(Node):
 
             sample.position.x += delta_transl_draw * cos(sample_yaw + delta_rot1_draw)
             sample.position.y += delta_transl_draw * sin(sample_yaw + delta_rot1_draw)
-            sample_q_draw = quaternion_from_euler(
+            sample_q_new = quaternion_from_euler(
                 0.0, 0.0, sample_yaw + delta_rot1_draw + delta_rot2_draw
             )
 
@@ -126,7 +126,7 @@ class OdometryMotionModel(Node):
                 sample.orientation.y,
                 sample.orientation.z,
                 sample.orientation.w,
-            ) = sample_q_draw
+            ) = sample_q_new
 
         self.last_odom_x = msg.pose.pose.position.x
         self.last_odom_y = msg.pose.pose.position.y
