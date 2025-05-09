@@ -16,6 +16,7 @@ sudo apt-get install -y ros-jazzy-robot-localization
 sudo apt-get install -y ros-jazzy-joy
 sudo apt-get install -y ros-jazzy-joy-teleop
 sudo apt-get install -y ros-jazzy-tf-transformations
+sudo apt-get install -y ros-jazzy-twist-mux
 ```
 ```
 sudo apt-get install -y xboxdrv
