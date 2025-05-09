@@ -1,5 +1,6 @@
 joystick:
   ros__parameters:
+    dev: /dev/input/js2
     device_id: 0
     device_name: ""
     deadzon: 0.5
