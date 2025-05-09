@@ -22,6 +22,7 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   ${PROJECT_NAME}/simple_controller.py
   ${PROJECT_NAME}/noisy_controller.py
+  ${PROJECT_NAME}/twist_relay.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -62,6 +63,13 @@ ament_target_dependencies(
   ${Eigen_LIBRARIES}
 )
 
+add_executable(twist_relay src/twist_relay.cpp)
+ament_target_dependencies(
+  twist_relay
+  rclcpp
+  geometry_msgs
+)
+
 install(
   DIRECTORY include
   DESTINATION include
@@ -70,7 +78,8 @@ install(
 install(
   TARGETS 
     simple_controller 
-    noisy_controller 
+    noisy_controller
+    twist_relay 
   DESTINATION lib/${PROJECT_NAME}
 )
 

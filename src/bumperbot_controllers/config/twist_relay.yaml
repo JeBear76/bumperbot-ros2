@@ -1,0 +1,7 @@
+twist_relay_node:
+  ros__parameters:
+    twist_in_topic: bumperbot_controller/cmd_vel_unstamped
+    twist_stamped_out_topic: bumperbot_controller/cmd_vel
+    twist_stamped_joy_in_topic: input_joy/cmd_vel_stamped
+    twist_joy_out_topic: input_joy/cmd_vel
+

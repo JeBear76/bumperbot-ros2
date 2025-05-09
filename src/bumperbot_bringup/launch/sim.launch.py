@@ -40,6 +40,8 @@ def generate_launch_description():
             launch_arguments={"is_sim": "True"}.items()
         )
     
+    # key_teleop key_teleop --ros-args -r key_vel:=bumperbot_controller/cmd_vel -p twist_stamped_enabled:=True
+
     nav_path = IncludeLaunchDescription(
             os.path.join(
                 get_package_share_directory("bumperbot_localization"),
