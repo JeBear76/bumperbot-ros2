@@ -11,6 +11,7 @@ def generate_launch_description():
     launch_ekf_arg = DeclareLaunchArgument(name="launch_ekf", default_value="False")
     launch_joystick_arg = DeclareLaunchArgument(name="use_joystick", default_value="false")
 
+    launch_paths = LaunchConfiguration("launch_paths")
     launch_ekf = LaunchConfiguration("launch_ekf")
     use_joystick = LaunchConfiguration("use_joystick")
 
@@ -62,7 +63,7 @@ def generate_launch_description():
                 "rviz.launch.py"
             ),
             launch_arguments={"is_sim": "True", "launch_ekf": launch_ekf}.items(),
-            condition=IfCondition(launch_paths_arg)
+            condition=IfCondition(launch_paths)
         )
     
     ekf = IncludeLaunchDescription(
