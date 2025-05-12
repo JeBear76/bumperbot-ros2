@@ -7,6 +7,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    launch_paths_arg = DeclareLaunchArgument(name="launch_paths", default_value="False")
     launch_ekf_arg = DeclareLaunchArgument(name="launch_ekf", default_value="False")
     launch_joystick_arg = DeclareLaunchArgument(name="use_joystick", default_value="false")
 
@@ -60,7 +61,8 @@ def generate_launch_description():
                 "launch",
                 "rviz.launch.py"
             ),
-            launch_arguments={"is_sim": "True", "launch_ekf": launch_ekf}.items()
+            launch_arguments={"is_sim": "True", "launch_ekf": launch_ekf}.items(),
+            condition=IfCondition(launch_paths_arg)
         )
     
     ekf = IncludeLaunchDescription(
@@ -75,6 +77,7 @@ def generate_launch_description():
         )
     
     return LaunchDescription([
+        launch_paths_arg,
         launch_joystick_arg,
         launch_ekf_arg,
         world_name_arg,
